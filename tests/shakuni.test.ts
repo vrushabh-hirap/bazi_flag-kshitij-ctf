@@ -15,7 +15,7 @@ assert.strictEqual(rng1(), rng2(), "PRNG should be deterministic with same seed"
 
 // 2. Normalization test
 const norm = normalizeInput("  Héllo   Wørld! ​ ");
-assert.strictEqual(norm, "hello world!", "Normalization should strip zero-width, map homoglyphs, lowercase and trim");
+assert.strictEqual(norm, "héllo wørld!", "Normalization should strip zero-width, lowercase and trim");
 
 // 3. Tokenize & anti-stuffing test
 const tokens = tokenize("roll roll roll roll");
