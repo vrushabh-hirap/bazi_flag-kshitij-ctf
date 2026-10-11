@@ -12,13 +12,15 @@ export function Chat({
   onSend,
   onRoll,
   typing,
-  lockedUntil
+  lockedUntil,
+  busy
 }: {
   messages: Message[];
   onSend: (msg: string) => void;
   onRoll: () => void;
   typing: boolean;
   lockedUntil: number;
+  busy: boolean;
 }) {
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,7 @@ export function Chat({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || timeLeft > 0) return;
+    if (!input.trim() || timeLeft > 0 || busy) return;
     onSend(input);
     setInput("");
   };
@@ -85,21 +87,21 @@ export function Chat({
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          disabled={timeLeft > 0}
-          placeholder={timeLeft > 0 ? "Shakuni is ignoring you..." : "Speak to Shakuni plainly..."}
+          disabled={timeLeft > 0 || busy}
+          placeholder={timeLeft > 0 ? "Shakuni is ignoring you..." : busy ? "Shakuni is thinking..." : "Speak to Shakuni plainly..."}
           className="flex-1 bg-[#14301f]/50 border border-[#c9a24b]/40 rounded px-3 py-2 text-[#efe6cf] font-mono text-sm focus:outline-none focus:border-[#c9a24b]"
         />
         <button
           type="button"
           onClick={onRoll}
-          disabled={timeLeft > 0}
+          disabled={timeLeft > 0 || busy}
           className="px-4 py-2 bg-[#c9a24b] text-[#0b0f0c] font-cinzel font-bold rounded hover:bg-[#e8b923] transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
         >
           <Dice5 size={18} /> Roll
         </button>
         <button
           type="submit"
-          disabled={timeLeft > 0}
+          disabled={timeLeft > 0 || busy}
           className="px-4 py-2 bg-[#14301f] border border-[#c9a24b] text-[#c9a24b] font-cinzel font-bold rounded hover:bg-[#c9a24b]/20 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
         >
           <Send size={18} /> Bol

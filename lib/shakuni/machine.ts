@@ -8,7 +8,6 @@ import { getTemplate } from './banks';
 import { mulberry32, hashString } from './prng';
 
 const SECRET = process.env.SESSION_SECRET || 'fallback-secret-key-32-chars-minimum-required';
-const REAL_FLAG = process.env.BAAZI_FLAG || '[REDACTED]';
 
 const decoys = [
   "KCTF{b4s_3k_4ur_b44z1_b4ch4}",
@@ -24,7 +23,10 @@ export function verifyCookie(cookieHeader?: string): SessionState {
     if (parts.length === 2) {
       const [payloadB64, sigB64] = parts;
       const expectedSig = crypto.createHmac('sha256', SECRET).update(payloadB64).digest('base64url');
-      if (crypto.timingSafeEqual(Buffer.from(sigB64), Buffer.from(expectedSig))) {
+      const sigBuf = Buffer.from(sigB64);
+      const expectedBuf = Buffer.from(expectedSig);
+      // timingSafeEqual throws on length mismatch; check length first
+      if (sigBuf.length === expectedBuf.length && crypto.timingSafeEqual(sigBuf, expectedBuf)) {
         try {
           const json = Buffer.from(payloadB64, 'base64url').toString('utf8');
           const state = JSON.parse(json) as SessionState;
@@ -181,6 +183,11 @@ export function processTurn(
     const isInspect = intents.INSPECT || intents.SWAP || intents.WITNESS;
 
     if (isDecline && isInspect && !isAccept) {
+      const flag = process.env.BAAZI_FLAG;
+      if (!flag) {
+        throw new Error("BAAZI_FLAG is not configured");
+      }
+
       state.phase = "WON";
       return {
         state,
@@ -191,7 +198,7 @@ export function processTurn(
           grudge: state.grudge,
           games_lost: state.games_lost,
           event: "won",
-          flag: REAL_FLAG
+          flag
         }
       };
     } else if (isAccept || (isInspect && isAccept)) {

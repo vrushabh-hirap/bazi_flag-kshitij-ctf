@@ -17,27 +17,36 @@ export const LEXICONS = {
 export function detectIntents(tokens: string[]): Record<string, boolean> {
   const result: Record<string, boolean> = {};
   const negators = new Set(["not", "no", "never", "don't", "dont", "nahi", "mat", "cant", "cannot"]);
+  const text = " " + tokens.join(" ") + " ";
+
+  const isNegated = (triggerIdx: number) => {
+    for (let j = Math.max(0, triggerIdx - 4); j < triggerIdx; j++) {
+      if (negators.has(tokens[j])) return true;
+    }
+    return false;
+  };
 
   for (const [intent, keywords] of Object.entries(LEXICONS)) {
     let triggered = false;
-    for (let i = 0; i < tokens.length; i++) {
+
+    for (let i = 0; i < tokens.length && !triggered; i++) {
       const t = tokens[i];
-      if (keywords.some(kw => t.includes(kw) || kw.includes(t))) {
-        let negated = false;
-        if (intent !== "DECLINE") {
-          for (let j = Math.max(0, i - 4); j < i; j++) {
-            if (negators.has(tokens[j])) {
-              negated = true;
-              break;
-            }
-          }
-        }
-        if (!negated) {
-          triggered = true;
-          break;
-        }
+      // single-word keywords: stemmed token contains the keyword (e.g. "rigg" contains "rig")
+      if (keywords.some(kw => !kw.includes(" ") && t.includes(kw))) {
+        if (intent === "DECLINE" || !isNegated(i)) triggered = true;
       }
     }
+
+    // multi-word keywords ("you are now", "act as"): exact phrase match, not substring
+    for (const kw of keywords) {
+      if (triggered || !kw.includes(" ")) continue;
+      const idx = text.indexOf(" " + kw + " ");
+      if (idx !== -1) {
+        const tokenIdx = text.slice(0, idx).trim().split(/\s+/).length - 1;
+        if (intent === "DECLINE" || !isNegated(tokenIdx)) triggered = true;
+      }
+    }
+
     result[intent] = triggered;
   }
   return result;

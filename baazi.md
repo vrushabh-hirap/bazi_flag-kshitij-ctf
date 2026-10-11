@@ -48,8 +48,7 @@ Tie to the Kurukshetra / Kalki arc: in many tellings Shakuni is the embodiment o
 | Irritating on purpose | Section 9. |
 | Great UI | Section 11. |
 
-**Flag (keep only in env, change if you like):**
-`[REDACTED]`
+**Flag:** keep the winning flag only in the private deployment environment.
 
 ---
 
@@ -420,7 +419,7 @@ Rules: fail closed; length ≥ 220 chars → mocking reply, no state change exce
 
 ### 13.2 Env vars (`.env.example`)
 ```
-BAAZI_FLAG=[REDACTED]
+BAAZI_FLAG=replace-with-your-private-flag
 SESSION_SECRET=change-me-to-32+-random-chars
 ```
 

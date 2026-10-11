@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Landing } from "@/components/Landing";
 import { Die } from "@/components/Die";
 import { ShakuniPortrait } from "@/components/ShakuniPortrait";
@@ -24,8 +24,14 @@ export default function Home() {
   const [muteUntil, setMuteUntil] = useState(0);
   const [typing, setTyping] = useState(false);
   const [victoryFlag, setVictoryFlag] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const inFlight = useRef(false); // synchronous guard: survives React batching within one tick
 
   const handleAction = async (payload: { message?: string; action?: "roll" }) => {
+    if (inFlight.current) return; // serialize turns: each turn must see the previous turn's cookie
+    inFlight.current = true;
+    setBusy(true);
+
     if (payload.action === "roll") {
       setRolling(true);
       setCurrentRoll(Math.floor(Math.random() * 6) + 1);
@@ -47,6 +53,8 @@ export default function Home() {
       setTimeout(() => {
         setTyping(false);
         setRolling(false);
+        setBusy(false);
+        inFlight.current = false;
         if (data.ledger) setRolls(data.ledger);
         if (data.pending_call) setPendingCall(data.pending_call);
         if (typeof data.grudge === "number") setGrudge(data.grudge);
@@ -73,6 +81,8 @@ export default function Home() {
     } catch (err) {
       setRolling(false);
       setTyping(false);
+      setBusy(false);
+      inFlight.current = false;
     }
   };
 
@@ -123,6 +133,7 @@ export default function Home() {
               onRoll={() => handleAction({ action: "roll" })}
               typing={typing}
               lockedUntil={muteUntil}
+              busy={busy}
             />
           </div>
         </div>
