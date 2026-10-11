@@ -1,6 +1,6 @@
 export const LEXICONS = {
   ROLL: ["roll", "throw", "play", "spin", "toss", "go", "chal", "fenk", "phenk", "khel"],
-  ACCUSE: ["load", "rig", "cheat", "cheater", "fix", "fake", "fraud", "tamper", "weight", "crook", "dhoka", "dhokha", "beimaan", "chaal", "unfair", "not", "fair", "random", "miss", "win", "luck"],
+  ACCUSE: ["load", "rig", "cheat", "cheater", "fix", "fake", "fraud", "tamper", "weight", "crook", "dhoka", "dhokha", "beimaan", "chaal", "unfair"],
   EVIDENCE_WORD: ["same", "match", "exact", "hit", "correct", "right", "predict", "call", "named", "said", "announce", "every", "each", "always", "thrice", "three", "row", "again"],
   INSPECT: ["inspect", "examine", "check", "test", "look", "see", "show", "weigh", "open", "break", "cut", "dekhne", "dikhao", "jaanch"],
   SWAP: ["my", "own", "another", "different", "new", "other", "fair", "neutral", "coin", "replace", "swap", "change", "apne", "paase"],
@@ -25,7 +25,7 @@ export function detectIntents(tokens: string[]): Record<string, boolean> {
       if (keywords.some(kw => t.includes(kw) || kw.includes(t))) {
         let negated = false;
         if (intent !== "DECLINE") {
-          for (let j = Math.max(0, i - 3); j < i; j++) {
+          for (let j = Math.max(0, i - 4); j < i; j++) {
             if (negators.has(tokens[j])) {
               negated = true;
               break;
