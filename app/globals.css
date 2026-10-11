@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --felt: #14301f;
+    --ink: #0b0f0c;
+    --ivory: #efe6cf;
+    --brass: #c9a24b;
+    --vermilion: #d1452b;
+    --haldi: #e8b923;
+    --sickly: #9bb36a;
+  }
+  
+  body {
+    background-color: var(--ink);
+    color: var(--ivory);
+    font-family: 'EB Garamond', serif;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=Tiro+Devanagari+Sanskrit&display=swap');
+
+.font-cinzel { font-family: 'Cinzel', serif; }
+.font-garamond { font-family: 'EB Garamond', serif; }
+.font-mono { font-family: 'IBM Plex Mono', monospace; }
+.font-sanskrit { font-family: 'Tiro Devanagari Sanskrit', serif; }
